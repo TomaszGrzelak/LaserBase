@@ -81,6 +81,10 @@ describe('LaserBase', function(){
       })
     })
 
+    describe('update', function(){
+      it('should update live queries')
+    })
+
   })
 
   describe('where', function(){
@@ -117,7 +121,7 @@ describe('LaserBase', function(){
 
   describe('has_many', function(){
 
-    it('shouldnt throw any errors when collection is declared', function(){
+    before(function(){
       DB.create_collection('todos')
       DB.users.has_many('todos', { fkey: 'user_id' })
     })
@@ -139,6 +143,38 @@ describe('LaserBase', function(){
       results.length.should.eql(1)
       DB.todos.insert({ id: 3, todo: 'FooBar3', user_id: 667 })
       results.length.should.eql(2)
+    })
+
+  })
+
+  describe('belongs_to', function(){
+
+    before(function(){
+      DB.todos.belongs_to('users', {singular: 'user'})
+    })
+
+    it('should access related objects', function(){
+      var todo = DB.todos.find(1)
+      todo.user().should.eql({ id: 666, name: 'Bob' })
+    })
+
+    it('should give reference to object', function(){
+      var results = DB.todos.find(1).user()
+      results.name.should.eql('Bob')
+      
+      DB.users.find(666).name = 'Tom'
+      results.name.should.eql('Tom')
+    })
+
+    // DEBATEABLE BEHAVIOUR
+    it('shouldnt live update everything', function(){
+      var results = DB.todos.find(1).user()
+      results.id.should.eql(666)
+
+      DB.todos.find(1).user_id = 667
+      // even thou we've changed the id to 667, the result didn't update
+      // because the event listener is only on todos collection, not on users collection
+      results.id.should.eql(666)
     })
 
   })
