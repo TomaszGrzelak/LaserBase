@@ -12,7 +12,7 @@ module.exports = function(grunt) {
         src: [
           'src/main.js'
         ],
-        dest: 'build/<%= pkg.name %>.js'
+        dest: '<%= pkg.name %>.js'
       }
     },
 
