@@ -11,6 +11,7 @@ describe('LaserBase', function(){
     it('should be an empty object', function(){
       DB.collections.should.be.instanceOf(Object)
       DB.collections.should.be.empty
+      DB.live_queries.should.be.empty
     })
   })
 
@@ -19,7 +20,6 @@ describe('LaserBase', function(){
       should.not.exist( DB.users )
       DB.create_collection('users')
       DB.users.should.be.instanceOf(Object)
-      DB.users.live_queries.should.be.empty
     })
 
     it('should return pointer to the newly created collection', function(){
@@ -70,21 +70,6 @@ describe('LaserBase', function(){
     it('should have 3 users at that point', function(){
       DB.users.data.length.should.eql( 3 )
     })
-  })
-
-  describe('resource', function(){
-    
-    describe('save', function(){
-      it('should be an function', function(){
-        var res = DB.users.data[0]
-        res.save.should.be.instanceof( Function )
-      })
-    })
-
-    describe('update', function(){
-      it('should update live queries')
-    })
-
   })
 
   describe('where', function(){
