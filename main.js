@@ -6,6 +6,7 @@
   var LaserBase = function(){
     this.db = this.constructor
     this.collections = {}
+    this.live_queries = []
   }
 
   // Export the Underscore object for **Node.js**, with
@@ -36,22 +37,40 @@
     this.collection_name = opt.collection_name
     this.adapter = opt.adapter
     this.data = []
-    this.live_queries = []
     this.Resource = function( data ){
       // copy data as own attributes
       _.merge( this, data )
     }
-    this.Resource.prototype = this.adapter || LaserBase.DefaultResource
+    this.Resource.prototype = this.adapter || LaserBase.BaseResource
     this.Resource.prototype.collection = this
   }
 
-  LaserBase.DefaultResource = {
+  LaserBase.prototype.update_live_queries = function() {
+    var db = this
+    _.forEach( db.live_queries, function( query ) {
+      query.result.length = 0 // in-place empty the array
+      _.merge(
+        query.result,
+        _.where( query.collection.data, query.search_term )
+      );
+    })
+  }
+
+  LaserBase.BaseResource = {
     delete: function() {},
     update: function( data ) {
       _.merge( this, data )
-      this.collection.update_live_queries();
+      this.db_instance.update_live_queries();
     },
-    save: function() {}
+    save: function() {
+      $http({method: 'POST', url: '/'}).
+      success(function(data, status, headers, config) {
+        console.log( 'success' )
+      }).
+      error(function(data, status, headers, config) {
+        console.log( 'error' )
+      });
+    }
   }
 
   LaserBase.Collection.prototype.insert = function( record ) {
@@ -64,25 +83,15 @@
       collection.data.push( new collection.Resource( record ) )
     }
 
-    collection.update_live_queries();
-  }
-
-  LaserBase.Collection.prototype.update_live_queries = function() {
-    var collection = this
-    _.forEach( collection.live_queries, function( query ) {
-      query.result.length = 0 // in-place empty the array
-      _.merge(
-        query.result,
-        _.where( collection.data, query.search_term )
-      );
-    })
+    this.db_instance.update_live_queries();
   }
 
   LaserBase.Collection.prototype.where = function( search_term ) {
     var result = _.where( this.data, search_term )
 
     // save reference to result object
-    this.live_queries.push({
+    this.db_instance.live_queries.push({
+      collection: this,
       search_term: search_term,
       result: result
     })
