@@ -1,4 +1,4 @@
-LaserBase.BaseResource = {
+LaserBase.Mappers.REST = {
   delete: function() {},
   update: function( data ) {
     _.merge( this, data )
