@@ -30,7 +30,7 @@ describe('LaserBase', function(){
     it('should accept adapter as second argument', function(){
       var MyAdapter = {}
       DB.create_collection('things', MyAdapter).should.be.ok
-      DB.things.adapter.should.equal( MyAdapter )
+      DB.things.mapper.should.equal( MyAdapter )
     })
 
     // TODO: use proper stubs, not some boolean var magic!
