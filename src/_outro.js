@@ -10,4 +10,8 @@
     root.LaserBase = LaserBase;
   }
 
+
+// })(window, window.angular);
+
+
 }.call(this));
