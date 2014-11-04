@@ -27,14 +27,14 @@ describe('LaserBase', function(){
       result.should.equal( DB.omg )
     })
 
-    it('should accept adapter as second argument', function(){
+    it('should accept mapper as second argument', function(){
       var MyAdapter = {}
       DB.create_collection('things', MyAdapter).should.be.ok
       DB.things.mapper.should.equal( MyAdapter )
     })
 
     // TODO: use proper stubs, not some boolean var magic!
-    it('should use save method coming from adapter', function(){
+    it('should use save method coming from mapper', function(){
       var exec = false
       var mock_obj = { id:1, prop:'Foo' }
       var MyAdapter = { save: function(){ exec = true } }
